@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#_#",
+        "A#A",
+        " A "
+    ],
+    "key": {
+        "#": {
+            "item": "minecraft:chain"
+        },
+        "_": {
+            "tag": "minecraft:slabs"
+        },
+        "A": {
+            "item": "minecraft:amethyst_shard"
+        }
+    },
+    "result": {
+        "item": "hexcraftmod:amethyst_chimes",
+        "count": 1
+    }
+}
