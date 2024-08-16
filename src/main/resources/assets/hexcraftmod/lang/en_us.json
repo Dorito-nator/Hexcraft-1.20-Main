@@ -215,5 +215,7 @@
   "tooltip.hexcraftmod.amethyst_chimes.tooltip": "Shows Nearby Hostile Mobs",
 
   //Creative Mod Tab
-  "creativetab.hexcraft_tab": "Hexcraft Tab"
+  "creativetab.hexcraft_tab": "Hexcraft Tab",
+
+  "container.hexcraftmod.example_menu_block": "Witches Oven Menu Block"
 }

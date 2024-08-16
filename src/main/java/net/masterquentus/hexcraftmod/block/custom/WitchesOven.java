@@ -2,9 +2,12 @@ package net.masterquentus.hexcraftmod.block.custom;
 
 import net.masterquentus.hexcraftmod.block.entity.HexcraftBlockEntities;
 import net.masterquentus.hexcraftmod.block.entity.WitchesOvenBlockEntity;
+import net.masterquentus.hexcraftmod.screen.HexcraftMenuTypes;
+import net.masterquentus.hexcraftmod.screen.WitchesOvenMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -13,6 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
@@ -31,21 +35,21 @@ public class WitchesOven extends AbstractFurnaceBlock {
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-//        if(pLevel.isClientSide()) {
-//            return InteractionResult.SUCCESS;
-//        } else {
-//          this.openContainer(pLevel, pPos, pPlayer);
-//          return InteractionResult.CONSUME;
-//        }
+
         BlockEntity be = pLevel.getBlockEntity(pPos);
-        if (!(be instanceof  WitchesOvenBlockEntity blockEntity))
+
+        if(!(be instanceof WitchesOvenBlockEntity blockEntity))
             return InteractionResult.PASS;
 
-        if(pPlayer instanceof ServerPlayer sPlayer){
-            sPlayer.openMenu(blockEntity);
+        if(pLevel.isClientSide){
+            return InteractionResult.SUCCESS;
         }
+
+        //open screen
+        NetworkHooks.openScreen((ServerPlayer) pPlayer, blockEntity, pPos);
         return InteractionResult.CONSUME;
     }
+
 
     @Override
     protected void openContainer(Level pLevel, BlockPos pPos, Player pPlayer) {

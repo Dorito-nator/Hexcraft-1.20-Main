@@ -33,7 +33,7 @@ public class WitchesOvenBlockEntity extends AbstractFurnaceBlockEntity implement
             Component.translatable("container." + HexcraftMod.MOD_ID + ".example_menu_block");
 
 
-    private final ItemStackHandler inventory = new ItemStackHandler(27) {
+    private final ItemStackHandler inventory = new ItemStackHandler(5) {
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
@@ -47,6 +47,7 @@ public class WitchesOvenBlockEntity extends AbstractFurnaceBlockEntity implement
     public WitchesOvenBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(HexcraftBlockEntities.WITCHES_OVEN_BLOCK_ENTITY.get(), pPos, pBlockState, WitchesOvenRecipe.Type.INSTANCE);
     }
+
 
     @Override
     protected Component getDefaultName() {
@@ -86,12 +87,21 @@ public class WitchesOvenBlockEntity extends AbstractFurnaceBlockEntity implement
         return this.inventory;
     }
 
+    public ItemStack getStackInSlot(int slot) {
+        return this.inventory.getStackInSlot(slot);
+    }
+
+    public void setStackInSlot(int slot, ItemStack stack) {
+        this.inventory.setStackInSlot(slot, stack);
+    }
+
+
     @Override
     public @NotNull Component getDisplayName() {
         return TITLE;
     }
     @Override
-    protected AbstractContainerMenu createMenu(int pContainerId, Inventory pInventory) {
+    protected AbstractFurnaceMenu createMenu(int pContainerId, Inventory pInventory) {
         return new WitchesOvenMenu(pContainerId, pInventory, this, this.dataAccess);
     }
 

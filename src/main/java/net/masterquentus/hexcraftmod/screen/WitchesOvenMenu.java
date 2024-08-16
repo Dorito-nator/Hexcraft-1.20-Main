@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class WitchesOvenMenu extends AbstractFurnaceMenu {
     private final WitchesOvenBlockEntity blockEntity;
     private final ContainerLevelAccess levelAccess;
-    private final ContainerData data;
+    //private final ContainerData data;
 
     public WitchesOvenMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf friendlyByteBuf) {
         this(pContainerId, pPlayerInventory, pPlayerInventory.player.level().getBlockEntity(friendlyByteBuf.readBlockPos()), (ContainerData) new SimpleContainer(5));
@@ -27,11 +27,12 @@ public class WitchesOvenMenu extends AbstractFurnaceMenu {
 
     public WitchesOvenMenu(int pContainerId, Inventory pPlayerInventory, BlockEntity blockEntity, ContainerData data) {
         super(HexcraftMenuTypes.WITCHES_OVEN_MENU.get(), WitchesOvenRecipe.Type.INSTANCE, RecipeBookType.FURNACE, pContainerId, pPlayerInventory);
-        this.data = data;
+
         if(blockEntity instanceof WitchesOvenBlockEntity be){
             this.blockEntity = be;
         }else{
-            throw new IllegalStateException("Incorrect blockEntity class (%s) passed into ExmapleMenu!".formatted(blockEntity.getClass().getCanonicalName()));
+            throw new IllegalStateException("Incorrect blockEntity class (%s) passed into ExmapleMenu!"
+                    .formatted(blockEntity.getClass().getCanonicalName()));
         }
 
         this.levelAccess = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
@@ -40,26 +41,51 @@ public class WitchesOvenMenu extends AbstractFurnaceMenu {
         createPlayerInventory(pPlayerInventory);
         createBlockEntityinventory(be);
     }
-    public boolean isCrafting() {
-        return data.get(0) > 0;
+
+    @Override
+    public @NotNull ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+        Slot fromSlot = getSlot(pIndex);
+        ItemStack fromStack = fromSlot.getItem();
+
+        if(fromStack.getCount() <= 0)
+            fromSlot.set(ItemStack.EMPTY);
+
+        if(!fromSlot.hasItem())
+            return ItemStack.EMPTY;
+
+        ItemStack copyFromStack = fromStack.copy();
+
+        if(pIndex < 36) {
+            // We are inside of the player's inventory
+            if(!moveItemStackTo(fromStack, 36, 63, false))
+                return ItemStack.EMPTY;
+        } else if (pIndex < 63) {
+            // We are inside of the block entity inventory
+            if(!moveItemStackTo(fromStack, 0, 36, false))
+                return ItemStack.EMPTY;
+        } else {
+            System.err.println("Invalid slot index: " + pIndex);
+            return ItemStack.EMPTY;
+        }
+
+        fromSlot.setChanged();
+        fromSlot.onTake(pPlayer, fromStack);
+
+        return copyFromStack;
     }
 
-    public int getScaledProgress() {
-        int progress = this.data.get(0);
-        int maxProgress = this.data.get(1);
-        int progressArrowSize = 26;
-
-        return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
+    @Override
+    public boolean stillValid(Player pPlayer){
+        return stillValid(this.levelAccess, pPlayer, HexcraftBlocks.WITCHES_OVEN.get());
     }
 
     private void createBlockEntityinventory(WitchesOvenBlockEntity be) {
-
-        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(iItemHandler ->{
-            this.addSlot(new SlotItemHandler(iItemHandler, 0, 56, 17));
-            this.addSlot(new SlotItemHandler(iItemHandler, 1, 56, 53));
-            this.addSlot(new SlotItemHandler(iItemHandler, 2, 75, 53));
-            this.addSlot(new SlotItemHandler(iItemHandler, 3, 107, 12));
-            this.addSlot(new SlotItemHandler(iItemHandler, 4, 107, 56));
+        blockEntity.getOptional().ifPresent(inventory -> {
+            for(int row = 0; row < 3; row++) {
+                for(int column = 0; column < 9; column++) {
+                    addSlot(new SlotItemHandler(inventory, column + row * 9, 8 + column * 18, 18 + row * 18));
+                }
+            }
         });
     }
 
@@ -77,45 +103,8 @@ public class WitchesOvenMenu extends AbstractFurnaceMenu {
         }
     }
 
-    @Override
-    public boolean stillValid(Player pPlayer){
-        return stillValid(this.levelAccess, pPlayer, HexcraftBlocks.WITCHES_OVEN.get());
-    }
-
     public WitchesOvenBlockEntity getBlockEntity() {
         return this.blockEntity;
-    }
-
-  @Override
-    public @NotNull ItemStack quickMoveStack(Player pPlayer, int pIndex) {
-      Slot fromSlot = getSlot(pIndex);
-      ItemStack fromStack = fromSlot.getItem();
-
-      if(fromStack.getCount() <= 0)
-          fromSlot.set(ItemStack.EMPTY);
-
-      if(!fromSlot.hasItem())
-          return ItemStack.EMPTY;
-
-      ItemStack copyFromStack = fromStack.copy();
-
-      if(pIndex < 36) {
-          // We are inside of the player's inventory
-          if(!moveItemStackTo(fromStack, 36, 63, false))
-              return ItemStack.EMPTY;
-      } else if (pIndex < 63) {
-          // We are inside of the block entity inventory
-          if(!moveItemStackTo(fromStack, 0, 36, false))
-              return ItemStack.EMPTY;
-      } else {
-          System.err.println("Invalid slot index: " + pIndex);
-          return ItemStack.EMPTY;
-      }
-
-      fromSlot.setChanged();
-      fromSlot.onTake(pPlayer, fromStack);
-
-      return copyFromStack;
     }
 
 }

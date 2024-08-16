@@ -15,13 +15,17 @@ public class WitchesOvenScreen extends AbstractFurnaceScreen<WitchesOvenMenu> {
 
     public WitchesOvenScreen(WitchesOvenMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, new WitchesOvenRecipeBookComponent(), pPlayerInventory, pTitle, TEXTURE);
+
+        this.imageWidth = 176;
+        this.imageHeight = 166;
+
     }
-    @Override
-    public void init() {
-        super.init();
-        this.inventoryLabelY = 10000;
-        this.titleLabelY = 10000;
-    }
+//    @Override
+//    public void init() {
+//        super.init();
+//        this.inventoryLabelY = 10000;
+//        this.titleLabelY = 10000;
+//    }
 
     @Override
     protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY){
@@ -30,7 +34,6 @@ public class WitchesOvenScreen extends AbstractFurnaceScreen<WitchesOvenMenu> {
     }
 
     public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick){
-        renderBackground(pGuiGraphics);
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
